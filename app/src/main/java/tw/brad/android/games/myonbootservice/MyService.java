@@ -1,6 +1,10 @@
 package tw.brad.android.games.myonbootservice;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -11,6 +15,7 @@ import java.util.TimerTask;
 
 public class MyService extends Service {
     private Timer timer;
+    private NotificationManager nmgr;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -23,6 +28,8 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i("brad", "MyService:onCreate()");
+        nmgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
         timer = new Timer();
         timer.schedule(new MyTask(), 1000, 3000);
     }
@@ -44,6 +51,14 @@ public class MyService extends Service {
         builder.setContentText("內容");
         builder.setAutoCancel(true);
 
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+//        PendingIntent pendingIntent =
+//                stackBuilder.getPendingIntent(
+//                        0, PendingIntent.FLAG_UPDATE_CURRENT);
+//        builder.setContentIntent(pendingIntent);
+
+        Notification notification = builder.build();
+        nmgr.notify(1, notification);
 
 
     }
