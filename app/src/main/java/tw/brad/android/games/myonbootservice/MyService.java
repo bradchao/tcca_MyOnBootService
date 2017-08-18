@@ -16,6 +16,7 @@ import java.util.TimerTask;
 public class MyService extends Service {
     private Timer timer;
     private NotificationManager nmgr;
+    private int i;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -31,7 +32,7 @@ public class MyService extends Service {
         nmgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         timer = new Timer();
-        timer.schedule(new MyTask(), 1000, 3000);
+        timer.schedule(new MyTask(), 5* 1000, 10* 1000);
     }
 
     private class MyTask extends TimerTask {
@@ -43,6 +44,7 @@ public class MyService extends Service {
     }
 
     private void sendNotice(){
+        i++;
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.android);
@@ -51,14 +53,20 @@ public class MyService extends Service {
         builder.setContentText("內容");
         builder.setAutoCancel(true);
 
-//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-//        PendingIntent pendingIntent =
-//                stackBuilder.getPendingIntent(
-//                        0, PendingIntent.FLAG_UPDATE_CURRENT);
-//        builder.setContentIntent(pendingIntent);
+        Intent it = new Intent(this, NoticeActivity.class);
+        it.putExtra("key", i);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(NoticeActivity.class);
+        stackBuilder.addNextIntent(it);
+
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent(
+                        0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
 
         Notification notification = builder.build();
-        nmgr.notify(1, notification);
+        nmgr.notify(i, notification);
 
 
     }
